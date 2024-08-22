@@ -1,6 +1,9 @@
 package service
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 type Book struct {
 	ID     int
@@ -18,20 +21,25 @@ func NewBookService(db *sql.DB) *BookService {
 }
 
 func (s *BookService) CreateBook(book *Book) error {
-	query := "Insert into books (title, author, genre) values (?, ?, ?)"
+	query := "INSERT INTO books (title, author, genre) VALUES (?, ?, ?)"
 	result, err := s.db.Exec(query, book.Title, book.Author, book.Genre)
-
 	if err != nil {
+		log.Printf("Erro ao executar query: %v\n", err)
 		return err
 	}
 
-	// Pega id do book selecionado
 	lastInsertId, err := result.LastInsertId()
 	if err != nil {
+		log.Printf("Erro ao obter LastInsertId: %v\n", err)
 		return err
+	}
+
+	if lastInsertId == 0 {
+		log.Println("Nenhum ID foi retornado, verifique a configuração da coluna ID")
 	}
 
 	book.ID = int(lastInsertId)
+	log.Printf("Livro criado com ID: %d\n", book.ID)
 	return nil
 }
 

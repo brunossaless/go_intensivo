@@ -28,16 +28,13 @@ func (h *BookHandlers) GetBooks(w http.ResponseWriter, r *http.Request) {
 
 func (h *BookHandlers) CreateBook(w http.ResponseWriter, r *http.Request) {
 	var book service.Book
-	err := json.NewDecoder(r.Body).Decode(&book)
-	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
+		http.Error(w, "invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	err = h.serviceBook.CreateBook(&book)
-
-	if err != nil {
-		http.Error(w, "Failed to create book", http.StatusInternalServerError)
+	if err := h.serviceBook.CreateBook(&book); err != nil {
+		http.Error(w, "failed to create book", http.StatusInternalServerError)
 		return
 	}
 
