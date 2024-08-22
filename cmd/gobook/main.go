@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"gobooks/internal/service"
 	"gobooks/internal/web"
+	"log"
 	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -33,4 +34,8 @@ func main() {
 	router.HandleFunc("DELETE /books/{id}", bookHandlers.DeleteBook)
 
 	http.ListenAndServe(":8080", router)
+
+	// Iniciando o servidor
+	log.Println("Server is running on port 8080...")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
