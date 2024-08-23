@@ -5,6 +5,7 @@ import (
 	"gobooks/internal/service"
 	"os"
 	"strconv"
+	"time"
 )
 
 type BookCLI struct {
@@ -76,4 +77,9 @@ func (cli *BookCLI) simulateReading(bookIDsStr []string) {
 		bookIDs = append(bookIDs, id)
 	}
 
+	responses := cli.bookService.SimulateMultipleRead(bookIDs, 2*time.Second)
+
+	for _, response := range responses {
+		fmt.Println(response)
+	}
 }
