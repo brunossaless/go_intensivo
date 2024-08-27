@@ -27,7 +27,8 @@ func main() {
 
 	bookHandlers := web.NewBookHandlers(bookService)
 
-	if len(os.Args) > 1 && (os.Args[1] == "search" || os.Args[1] == "simulate") {
+	//Start a server with cli
+	if len(os.Args) > 1 && (os.Args[1] == "cli") {
 		bookCLI := cli.NewBookCLI(bookService)
 		bookCLI.Run()
 		return

@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
 	"gobooks/internal/service"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,33 +19,50 @@ func NewBookCLI(bookService *service.BookService) *BookCLI {
 }
 
 func (cli *BookCLI) Run() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: books <command> [arguments...]")
-		return
-	}
+	reader := bufio.NewReader(os.Stdin)
 
-	command := os.Args[1]
-
-	switch command {
-	case "search":
-		if len(os.Args) < 3 {
-			fmt.Println("Usage: books search <book title>")
-			return
-		}
-		bookName := os.Args[2]
-		cli.searchBooks(bookName)
-
-	case "simulate":
-		if len(os.Args) < 3 {
-			fmt.Println("Usage: books simulate <book_id> <book_id> ...")
+	for {
+		fmt.Print("<command> <book name> ")
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
 			return
 		}
 
-		//Pega todos do 2 args pra frente
-		bookIDs := os.Args[2:]
-		cli.simulateReading(bookIDs)
-	}
+		input = strings.TrimSpace(input)
+		args := strings.Fields(input)
 
+		if len(args) == 0 {
+			continue
+		}
+
+		command := args[0]
+
+		switch command {
+		case "search":
+			if len(args) < 2 {
+				fmt.Println("Usage: search <book title>")
+				continue
+			}
+			bookName := strings.Join(args[1:], " ")
+			cli.searchBooks(bookName)
+
+		case "simulate":
+			if len(args) < 2 {
+				fmt.Println("Usage: simulate <book_id> <book_id> ...")
+				continue
+			}
+			bookIDs := args[1:]
+			cli.simulateReading(bookIDs)
+
+		case "exit":
+			fmt.Println("Exiting...")
+			return
+
+		default:
+			fmt.Println("Unknown command:", command)
+		}
+	}
 }
 
 func (cli *BookCLI) searchBooks(bookName string) {
